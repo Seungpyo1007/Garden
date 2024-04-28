@@ -20,8 +20,10 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add date.txt
           git commit -m "Update date to ${{ steps.date.outputs.date }}"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      - name: Pull latest changes
+        run: git pull origin master
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Update date to ${{ steps.date.outputs.date }}"
+          git push origin master
