@@ -25,3 +25,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+
+      - name: Repeat tasks
+        run: |
+          for i in {1..100}; do
+            echo "Running task $i"
+            # 여기에 반복할 작업을 추가하세요
+            echo "Completed task $i"
+          done
