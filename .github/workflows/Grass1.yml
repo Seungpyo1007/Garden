@@ -2,12 +2,33 @@ name: Grass1
 
 on:
   schedule:
-    - cron: '0 0 */2 * *'  # 이틀마다 00:00 UTC에 실행
+    - cron: '0 0 * * *'  # 매일 00:00 UTC에 실행
 
 jobs:
   task:
     runs-on: ubuntu-latest
     steps:
+      - name: 50% 확률로 실행 여부 결정
+        id: random_check
+        run: |
+          # 1과 2 중 무작위로 하나를 선택
+          RANDOM_NUM=$(shuf -i 1-2 -n 1)
+          
+          # 숫자가 1일 경우에만 다음 단계를 진행 (50% 확률)
+          if [ "$RANDOM_NUM" -eq 1 ]; then
+            echo "::set-output name=run_action::true"
+            echo "랜덤 확인 통과! 워크플로우를 계속 진행합니다."
+          else
+            echo "::set-output name=run_action::false"
+            echo "랜덤 확인 실패. 워크플로우를 건너뜁니다."
+          fi
+      
+      - name: 커밋 스킵
+        if: steps.random_check.outputs.run_action == 'false'
+        run: |
+          echo "랜덤 확인에 실패하여 커밋을 건너뜁니다."
+          exit 0
+      
       - uses: actions/checkout@v2
       - name: Set current date
         id: date
