@@ -22,13 +22,12 @@ jobs:
             echo "::set-output name=run_action::false"
             echo "랜덤 확인 실패. 워크플로우를 건너뜁니다."
           fi
-      
-      - name: 커밋 스킵
-        if: steps.random_check.outputs.run_action == 'false'
-        run: |
-          echo "랜덤 확인에 실패하여 커밋을 건너뜁니다."
-          exit 0
-      
+    
+  run_on_random:
+    if: needs.task.outputs.run_action == 'true'
+    needs: task  # task 잡이 먼저 실행되어야 함
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - name: Set current date
         id: date
